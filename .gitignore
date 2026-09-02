@@ -1,0 +1,29 @@
+# Python / FastAPI
+venv/
+.venv
+__pycache__/
+*.py[cod]
+*.env
+
+# Unity / Quest (Abhinandan's build artifacts)
+[L|l]ibrary/
+[T|t]emp/
+[O|o]bj/
+[B|b]uild/
+[B|b]uilds/
+[L|l]ogs/
+[U|u]ser[S|s]etting[S|s]/
+*.csproj
+*.sln
+
+# Terraform & AWS credentials
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.pem
+
+# Local Uploads & Reconstruction Outputs
+uploads/
+reconstruction/
+*.splat
+*.db

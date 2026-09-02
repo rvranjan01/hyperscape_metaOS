@@ -1,11 +1,10 @@
-
 # Immverse Room Scan to 3D Gaussian Splat Backend
 
 A FastAPI and PostgreSQL backend service for handling 3D room scan frame chunk uploads from Meta Quest 3 headsets, orchestrating COLMAP sparse reconstructions, and training Gaussian Splat models via AWS GPU instances[cite: 1, 2, 5].
 
 ---
 
-## Technical Stack
+## Technical Stack - 
 
 * **Framework:** Python 3.11+ / FastAPI[cite: 1, 5]
 * **Database:** PostgreSQL 14+ (running in Docker)[cite: 2, 5]

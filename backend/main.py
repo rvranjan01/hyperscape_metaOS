@@ -2,9 +2,12 @@ import os
 from database import Scan, SessionLocal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from routes.upload import router as upload_router
 
 app = FastAPI(title="Immverse Room Scan API")
 
+# Include the file upload endpoint route
+app.include_router(upload_router)
 
 class CreateScanRequest(BaseModel):
   device_name: str

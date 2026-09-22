@@ -27,3 +27,6 @@ uploads/
 reconstruction/
 *.splat
 *.db
+test_data/
+test_output/
+processing/

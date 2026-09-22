@@ -40,6 +40,24 @@ def create_scan(request: CreateScanRequest):
       "device_name": new_scan.device_name,
   }
 
+@app.get("/scans")
+def get_all_scans():
+    db = SessionLocal()
+
+    scans = db.query(Scan).all()
+
+    db.close()
+
+    return [
+        {
+            "scan_id": scan.id,
+            "status": scan.status,
+            "device_name": scan.device_name,
+            "total_frames": scan.total_frames,
+        }
+        for scan in scans
+    ]
+
 
 @app.get("/scans/{scan_id}/status")
 def get_scan_status(scan_id: str):

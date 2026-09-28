@@ -30,3 +30,4 @@ reconstruction/
 test_data/
 test_output/
 processing/
+nerfstudio_venv/

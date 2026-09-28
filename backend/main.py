@@ -1,5 +1,5 @@
 import os
-from database import Scan, SessionLocal
+from database import Asset, Scan, SessionLocal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from routes.upload import router as upload_router
@@ -83,5 +83,34 @@ def get_scan_status(scan_id: str):
   }
   
   
+# --- Add this to backend/main.py ---
+# (import Asset alongside Scan at the top: `from database import Scan, Asset, SessionLocal`)
+
+@app.get("/scans/{scan_id}/asset")
+def get_scan_asset(scan_id: str):
+    db = SessionLocal()
+    scan = db.query(Scan).filter(Scan.id == scan_id).first()
+
+    if not scan:
+        db.close()
+        raise HTTPException(status_code=404, detail="Scan ID not found")
+
+    if scan.status != "complete":
+        db.close()
+        return {"scan_id": scan_id, "status": scan.status, "message": "Not ready yet"}
+
+    asset = (
+        db.query(Asset)
+        .filter(Asset.scan_id == scan_id, Asset.file_type == "splat")
+        .first()
+    )
+    db.close()
+
+    if not asset:
+        raise HTTPException(status_code=404, detail="No splat asset found for this scan")
+
+    # Week 2/local: s3_key is actually a local file path.
+    # Week 3, once you're on AWS: swap this for a presigned S3 URL instead.
+    return {"scan_id": scan_id, "status": "complete", "splat_path": asset.s3_key}
 # venv\Scripts\activate 
 # uvicorn main:app --reload  

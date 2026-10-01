@@ -3,6 +3,8 @@ from database import Asset, Scan, SessionLocal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from routes.upload import router as upload_router
+from config import S3_BUCKET_SPLAT_OUTPUTS
+from workers.s3_utils import generate_presigned_url
 
 app = FastAPI(title="Immverse Room Scan API")
 
@@ -83,8 +85,6 @@ def get_scan_status(scan_id: str):
   }
   
   
-# --- Add this to backend/main.py ---
-# (import Asset alongside Scan at the top: `from database import Scan, Asset, SessionLocal`)
 
 @app.get("/scans/{scan_id}/asset")
 def get_scan_asset(scan_id: str):
@@ -97,7 +97,10 @@ def get_scan_asset(scan_id: str):
 
     if scan.status != "complete":
         db.close()
-        return {"scan_id": scan_id, "status": scan.status, "message": "Not ready yet"}
+        return {
+            "scan_id": scan_id,
+            "status": scan.status, "message": "Not ready yet"
+            }
 
     asset = (
         db.query(Asset)
@@ -109,8 +112,13 @@ def get_scan_asset(scan_id: str):
     if not asset:
         raise HTTPException(status_code=404, detail="No splat asset found for this scan")
 
-    # Week 2/local: s3_key is actually a local file path.
-    # Week 3, once you're on AWS: swap this for a presigned S3 URL instead.
-    return {"scan_id": scan_id, "status": "complete", "splat_path": asset.s3_key}
+    download_url = generate_presigned_url(S3_BUCKET_SPLAT_OUTPUTS, asset.s3_key)
+    return {
+        "scan_id": scan_id, 
+        "status": "complete",
+        "download_url": download_url,
+        "expires_in": 3600
+    }  # URL expires in 1 hour
+    
 # venv\Scripts\activate 
 # uvicorn main:app --reload  

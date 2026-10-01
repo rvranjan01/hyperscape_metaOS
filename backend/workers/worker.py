@@ -21,8 +21,10 @@ import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import Scan, Job, Asset, SessionLocal
+from config import S3_BUCKET_SPLAT_OUTPUTS
 from workers.colmap_runner import run_colmap, ColmapError
 from workers.splatfacto_runner import run_splatfacto, SplatfactoError
+from workers.s3_utils import upload_file
 
 UPLOAD_DIR = "./uploads"       # matches routes/upload.py
 PROCESSING_DIR = "./processing"  # colmap + splat working directory
@@ -65,9 +67,16 @@ def process_scan(scan_id: str):
 
         print(f"[worker] scan {scan_id}: running Splatfacto")
         splat_file = run_splatfacto(scan_id, images_dir, model_dir, splat_out)
+        
+        # Upload the finished model to S3 so it survives even if this
+        # instance is reclaimed, and so the Quest app can download it.
+        s3_key = f"scans/{scan_id}/splat/model.ply"
+        print(f"[worker] scan {scan_id}: uploading to s3://{S3_BUCKET_SPLAT_OUTPUTS}/{s3_key}")
+        upload_file(splat_file, S3_BUCKET_SPLAT_OUTPUTS, s3_key)
+
 
         # Record the output asset so GET /scans/{id}/asset can find it
-        asset = Asset(scan_id=scan_id, file_type="splat", s3_key=splat_file)
+        asset = Asset(scan_id=scan_id, file_type="splat", s3_key=s3_key)
         db.add(asset)
 
         job.stage = "complete"

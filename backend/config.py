@@ -10,11 +10,11 @@ from dotenv import load_dotenv
 
 
 # Project root:
-# metaOS_APK/
+# hyperscape_metaOS/
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Project root .env:
-# metaOS_APK/.env
+# hyperscape_metaOS/.env
 ENV_PATH = BASE_DIR / ".env"
 
 # Load environment variables

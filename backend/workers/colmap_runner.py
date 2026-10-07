@@ -17,7 +17,12 @@ import subprocess
 import time
 
 # If "colmap" isn't on PATH, point this at your COLMAP.bat, e.g.:
-COLMAP_EXE = r"C:\colmap-x64-windows-nocuda\COLMAP.bat"
+# Check properly this line when running in AWS
+# COLMAP_EXE = r"C:\colmap-x64-windows-nocuda\COLMAP.bat"
+
+# Path to the COLMAP binary. Override with the COLMAP_EXE environment variable
+# (e.g. in .env on AWS). Falls back to "colmap" on PATH.
+COLMAP_EXE = os.getenv("COLMAP_EXE", "colmap")
 
 
 class ColmapError(Exception):

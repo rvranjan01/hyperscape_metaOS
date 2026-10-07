@@ -31,3 +31,10 @@ test_data/
 test_output/
 processing/
 nerfstudio_venv/
+venv/
+out_*/
+test_images/
+*.deb
+*.ply
+*.ckpt
+__pycache__/
